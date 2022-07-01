@@ -19,6 +19,37 @@ async function run() {
         await client.connect();
         const taskCollection = client.db('task-manager').collection('task');
 
+        // POST
+        app.post('/task', async (req, res) => {
+            const newTask = req.body;
+            const result = await taskCollection.insertOne(newTask);
+            res.send(result);
+        });
+
+        // GET
+        app.get('/task', async (req, res) => {
+            const query = {};
+            const cursor = taskCollection.find(query);
+            const tasks = await cursor.toArray();
+            res.send(tasks);
+        });
+
+        // DELETE
+        app.delete('/task/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await taskCollection.deleteOne(query);
+            res.send(result);
+        });
+
+        app.get('/', (req, res) => {
+            res.send('Hello World!')
+        });
+
+        app.listen(port, () => {
+            console.log(`Example app listening on port ${port}`)
+        });
+
     }
     finally {
 
